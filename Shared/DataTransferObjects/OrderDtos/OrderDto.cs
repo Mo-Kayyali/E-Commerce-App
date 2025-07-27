@@ -11,6 +11,6 @@ namespace Shared.DataTransferObjects.OrderDtos
     {
         public string BasketId { get; set; }
         public int DeliveryMethodId { get; set; }
-        public AddressDto shipToAddress { get; set; } = default!;
+        public AddressDto ShipToAddress { get; set; } = default!;
     }
 }
