@@ -30,7 +30,7 @@ namespace Presentation.Controllers
             return Ok(Product);
         }
 
-        [HttpGet("types")]
+        [HttpGet("Types")]
         //[Cache]
         public async Task<ActionResult<IEnumerable<TypeDto>>> GetTypes()
         {
@@ -38,7 +38,7 @@ namespace Presentation.Controllers
             return Ok(Types);
         }
 
-        [HttpGet("brands")]
+        [HttpGet("Brands")]
         //[Cache]
         public async Task<ActionResult<IEnumerable<BrandDto>>> GetBrands()
         {
