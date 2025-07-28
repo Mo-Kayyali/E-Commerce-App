@@ -15,7 +15,6 @@ namespace Presentation.Controllers
 
     public class ProductsController(IServiceManager _serviceManager) : ApiBaseController
     {
-        [Authorize(Roles = "Admin")]
         [HttpGet]
         [Cache]
         public async Task<ActionResult<PaginatedResult<ProductDto>>> GetAllProducts([FromQuery] ProductQueryParams queryParams)

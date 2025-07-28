@@ -25,7 +25,6 @@ namespace E_Commerce.Web
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            #region Add services to the container.
 
             builder.Services.AddControllers();
             builder.Services.AddCors(Options =>
@@ -48,7 +47,6 @@ namespace E_Commerce.Web
 
 
             await app.SeedDataBaseAsync();
-            #endregion
 
             app.UseCustomExceptionMiddleWare();
 

@@ -4,70 +4,71 @@ using DomainLayer.Models.ProductModule;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Persistence.Data;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.Json;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 
 namespace Persistence
 {
-    public class DataSeeding(StoreDbContext _dbContext, UserManager<ApplicationUser> _userManager, RoleManager<IdentityRole> _roleManager,
-       StoreIdentityDbContext _identityDbContext) : IDataSeeding
+    public class DataSeeding(
+        StoreDbContext _dbContext,
+        UserManager<ApplicationUser> _userManager,
+        RoleManager<IdentityRole> _roleManager,
+        StoreIdentityDbContext _identityDbContext) : IDataSeeding
     {
         public async Task DataSeedAsync()
         {
             try
             {
-                var PendingMigrations = await _dbContext.Database.GetPendingMigrationsAsync();
-                if (PendingMigrations.Any())
+                var pendingMigrations = await _dbContext.Database.GetPendingMigrationsAsync();
+                if (pendingMigrations.Any())
                 {
                     await _dbContext.Database.MigrateAsync();
                 }
 
-                if (!_dbContext.Set<ProductType>().Any())
+                if (!_dbContext.ProductBrands.Any())
                 {
-                    var ProductBrandData = File.OpenRead(@"..\Infrastructure\Persistence\Data\DataSeed\brands.json");
-                    var ProductBrands = await JsonSerializer.DeserializeAsync<List<ProductBrand>>(ProductBrandData);
+                    var brandPath = Path.Combine(Directory.GetCurrentDirectory(), "Infrastructure", "Persistence", "Data", "DataSeed", "brands.json");
+                    using var brandStream = File.OpenRead(brandPath);
+                    var brands = await JsonSerializer.DeserializeAsync<List<ProductBrand>>(brandStream);
 
-                    if (ProductBrands is not null && ProductBrands.Any())
+                    if (brands is not null && brands.Any())
                     {
-                        await _dbContext.ProductBrands.AddRangeAsync(ProductBrands);
+                        await _dbContext.ProductBrands.AddRangeAsync(brands);
                     }
                 }
 
-                if (!_dbContext.Set<ProductBrand>().Any())
+                if (!_dbContext.ProductTypes.Any())
                 {
-                    var ProductTypeData = File.OpenRead(@"..\Infrastructure\Persistence\Data\DataSeed\types.json");
-                    var ProductTypes = await JsonSerializer.DeserializeAsync<List<ProductType>>(ProductTypeData);
+                    var typePath = Path.Combine(Directory.GetCurrentDirectory(), "Infrastructure", "Persistence", "Data", "DataSeed", "types.json");
+                    using var typeStream = File.OpenRead(typePath);
+                    var types = await JsonSerializer.DeserializeAsync<List<ProductType>>(typeStream);
 
-                    if (ProductTypes is not null && ProductTypes.Any())
+                    if (types is not null && types.Any())
                     {
-                        await _dbContext.ProductTypes.AddRangeAsync(ProductTypes);
+                        await _dbContext.ProductTypes.AddRangeAsync(types);
                     }
                 }
 
-                if (!_dbContext.Set<Product>().Any())
+                if (!_dbContext.Products.Any())
                 {
-                    var ProductData = File.OpenRead(@"..\Infrastructure\Persistence\Data\DataSeed\products.json");
-                    var Products = await JsonSerializer.DeserializeAsync<List<Product>>(ProductData);
+                    var productPath = Path.Combine(Directory.GetCurrentDirectory(), "Infrastructure", "Persistence", "Data", "DataSeed", "products.json");
+                    using var productStream = File.OpenRead(productPath);
+                    var products = await JsonSerializer.DeserializeAsync<List<Product>>(productStream);
 
-                    if (Products is not null && Products.Any())
+                    if (products is not null && products.Any())
                     {
-                        await _dbContext.Products.AddRangeAsync(Products);
+                        await _dbContext.Products.AddRangeAsync(products);
                     }
                 }
 
                 if (!_dbContext.Set<DeliveryMethod>().Any())
                 {
-                    using var DeliveryMethodDataStream = File.OpenRead(@"..\Infrastructure\Persistence\Data\DataSeed\delivery.json");
-                    var DeliveryMethods = await JsonSerializer.DeserializeAsync<List<DeliveryMethod>>(DeliveryMethodDataStream);
+                    var deliveryPath = Path.Combine(Directory.GetCurrentDirectory(), "Infrastructure", "Persistence", "Data", "DataSeed", "delivery.json");
+                    using var deliveryStream = File.OpenRead(deliveryPath);
+                    var deliveryMethods = await JsonSerializer.DeserializeAsync<List<DeliveryMethod>>(deliveryStream);
 
-                    if (DeliveryMethods is not null && DeliveryMethods.Any())
+                    if (deliveryMethods is not null && deliveryMethods.Any())
                     {
-                        await _dbContext.Set<DeliveryMethod>().AddRangeAsync(DeliveryMethods);
+                        await _dbContext.Set<DeliveryMethod>().AddRangeAsync(deliveryMethods);
                     }
                 }
 
@@ -75,7 +76,8 @@ namespace Persistence
             }
             catch (Exception ex)
             {
-                // TO DO
+                Console.WriteLine($"[DataSeeding Error - DataSeedAsync]: {ex.Message}");
+                throw;
             }
         }
 
@@ -91,32 +93,42 @@ namespace Persistence
 
                 if (!_userManager.Users.Any())
                 {
-                    var User01 = new ApplicationUser()
+                    var user1 = new ApplicationUser
                     {
                         Email = "Mohamed@gmail.com",
                         DisplayName = "Mohamed Kayyali",
                         PhoneNumber = "01101244495",
                         UserName = "MohamedKayyali"
                     };
-                    var User02 = new ApplicationUser()
+
+                    var user2 = new ApplicationUser
                     {
                         Email = "Nadine@gmail.com",
                         DisplayName = "Nadine Kayyali",
                         PhoneNumber = "01101244475",
                         UserName = "NadineKayyali"
                     };
-                    await _userManager.CreateAsync(User01, "Kayyali1!");
-                    await _userManager.CreateAsync(User02, "Kayyali1!");
-                    await _userManager.AddToRoleAsync(User01, "SuperAdmin");
-                    await _userManager.AddToRoleAsync(User01, "Admin");
+
+                    var result1 = await _userManager.CreateAsync(user1, "Kayyali1!");
+                    var result2 = await _userManager.CreateAsync(user2, "Kayyali1!");
+
+                    if (result1.Succeeded)
+                    {
+                        await _userManager.AddToRoleAsync(user1, "SuperAdmin");
+                        await _userManager.AddToRoleAsync(user1, "Admin");
+                    }
+
+                    if (result2.Succeeded)
+                    {
+                        await _userManager.AddToRoleAsync(user2, "Admin");
+                    }
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[SeedData Error] {ex.Message}");
+                Console.WriteLine($"[DataSeeding Error - IdentityDataSeedAsync]: {ex.Message}");
                 throw;
             }
-
         }
     }
 }
