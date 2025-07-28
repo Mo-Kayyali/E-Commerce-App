@@ -2,26 +2,25 @@
 using DomainLayer.Models.OrderModule;
 using Shared.DataTransferObjects.IdentityDtos;
 using Shared.DataTransferObjects.OrderDtos;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Service.MappingProfiles
 {
-    class OrderProfile : Profile
+    public class OrderProfile : Profile
     {
-        public OrderProfile() 
+        public OrderProfile()
         {
             CreateMap<AddressDto, OrderAddress>().ReverseMap();
 
-            CreateMap<Order, OrderToReturnDto>().ForMember(D => D.DeliveryMethod, O => O.MapFrom(S => S.DeliveryMethod.ShortName));
+            CreateMap<Order, OrderToReturnDto>()
+                .ForMember(d => d.DeliveryMethod, o => o.MapFrom(s => s.DeliveryMethod.ShortName))
+                .ForMember(d => d.DeliveryCost, o => o.MapFrom(s => s.DeliveryMethod.Cost))
+                .ForMember(d => d.Total, o => o.MapFrom(s => s.GetTotal()));
 
-            CreateMap<OrderItem, OrderItemDto>().ForMember(D => D.ProductName, O => O.MapFrom<OrderItemPictureUrlResolver>());
+            CreateMap<OrderItem, OrderItemDto>()
+                .ForMember(d => d.PictureUrl, o => o.MapFrom<OrderItemPictureUrlResolver>())
+                .ForMember(d => d.ProductName, o => o.MapFrom(s => s.Product.ProductName));
 
             CreateMap<DeliveryMethod, DeliveryMethodDto>();
         }
-
     }
 }

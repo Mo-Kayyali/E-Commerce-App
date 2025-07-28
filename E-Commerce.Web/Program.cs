@@ -31,9 +31,7 @@ namespace E_Commerce.Web
             {
                 Options.AddPolicy("AllowAll", builder =>
                 {
-                    builder.AllowAnyHeader();
-                    builder.AllowAnyMethod();
-                    builder.AllowAnyOrigin();
+                    builder.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:4200");
                 } );
             });
             builder.Services.AddSwaggerServices();
