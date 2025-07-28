@@ -41,10 +41,7 @@ namespace Service
         {
             var User = await _userManager.Users.Include(U => U.Address)
                            .FirstOrDefaultAsync(U => U.Email == Email) ?? throw new UserNotFoundException(Email);
-            if (User.Address is not null)
                 return _mapper.Map<Address, AddressDto>(User.Address);
-            else
-                throw new AddresssNotFoundException(User.UserName);
 
 
         }
@@ -92,9 +89,6 @@ namespace Service
 
 
         }
-
-
-
         public async Task<UserDto> RegisterAsync(RegisterDto registerDto)
         {
             //manual map from dto to user

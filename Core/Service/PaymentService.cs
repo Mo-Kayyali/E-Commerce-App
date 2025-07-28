@@ -36,7 +36,7 @@ namespace Service
             var BasketAmount = (long)(Basket.Items.Sum(item => item.Quantity * item.Price) + DeliveryMethod.Cost) * 100;
 
             var PaymentService = new PaymentIntentService();
-            if(Basket.paymentIntentId is not null)
+            if(Basket.paymentIntentId is null)
             {
                 var Options = new PaymentIntentCreateOptions()
                 {
