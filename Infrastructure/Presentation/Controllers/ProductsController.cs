@@ -16,7 +16,7 @@ namespace Presentation.Controllers
     public class ProductsController(IServiceManager _serviceManager) : ApiBaseController
     {
         [HttpGet]
-        [Cache]
+        //[Cache]
         public async Task<ActionResult<PaginatedResult<ProductDto>>> GetAllProducts([FromQuery] ProductQueryParams queryParams)
         {
             var Products = await _serviceManager.ProductService.GetAllProductsAsync(queryParams);
@@ -31,7 +31,7 @@ namespace Presentation.Controllers
         }
 
         [HttpGet("types")]
-        [Cache]
+        //[Cache]
         public async Task<ActionResult<IEnumerable<TypeDto>>> GetTypes()
         {
             var Types = await _serviceManager.ProductService.GetAllTypesAsync();
@@ -39,7 +39,7 @@ namespace Presentation.Controllers
         }
 
         [HttpGet("brands")]
-        [Cache]
+        //[Cache]
         public async Task<ActionResult<IEnumerable<BrandDto>>> GetBrands()
         {
             var Brands = await _serviceManager.ProductService.GetAllBrandsAsync();
